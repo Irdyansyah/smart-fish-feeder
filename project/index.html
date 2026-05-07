@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Smart Fish Feeder Dashboard</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --pink1:#f8b8d0;
+    --pink2:#ffd1e0;
+    --pink3:#e695c3;
+    --white:#ffffff;
+
+    --glass:rgba(255,255,255,0.25);
+    --border:rgba(255,255,255,0.18);
+
+    --shadow:
+    0 8px 32px rgba(248,184,208,0.25);
+}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    min-height:100vh;
+    padding:20px;
+
+    background:
+    linear-gradient(
+    135deg,
+    #f5f7fa 0%,
+    #c3cfe2 50%,
+    #f8b8d0 100%);
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+/* HEADER */
+
+.header{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.logo{
+    font-size:2.7rem;
+    font-weight:800;
+
+    background:
+    linear-gradient(
+    135deg,
+    var(--pink3),
+    var(--pink1));
+
+    background-clip:text;
+    -webkit-background-clip:text;
+
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+    color:#666;
+    margin-top:10px;
+}
+
+/* CARD */
+
+.status-grid{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(280px,1fr));
+
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.card{
+    background:var(--glass);
+    backdrop-filter:blur(18px);
+
+    border-radius:24px;
+    padding:24px;
+
+    border:1px solid var(--border);
+
+    box-shadow:var(--shadow);
+
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.card-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    margin-bottom:15px;
+
+    color:#555;
+    font-weight:600;
+}
+
+.status-value{
+    font-size:2rem;
+    font-weight:bold;
+    color:var(--pink3);
+}
+
+.status-time{
+    color:#666;
+    margin-top:6px;
+}
+
+/* STATUS */
+
+.online{
+    border-left:5px solid #22c55e;
+}
+
+.offline{
+    border-left:5px solid #ef4444;
+}
+
+.indicator{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+}
+
+.indicator.online{
+    background:#22c55e;
+    box-shadow:0 0 10px #22c55e;
+}
+
+.indicator.offline{
+    background:#ef4444;
+    box-shadow:0 0 10px #ef4444;
+}
+
+/* BUTTON */
+
+.feed-btn{
+    width:100%;
+    max-width:350px;
+
+    display:block;
+    margin:auto auto 30px;
+
+    border:none;
+    outline:none;
+
+    padding:18px 30px;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+    135deg,
+    var(--pink1),
+    var(--pink2));
+
+    color:white;
+
+    font-size:1.1rem;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.feed-btn:hover{
+    transform:translateY(-4px);
+}
+
+.feed-btn:disabled{
+    opacity:.8;
+    cursor:not-allowed;
+}
+
+/* TOGGLE */
+
+.toggle-box{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.toggle-container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:15px;
+}
+
+.switch{
+    position:relative;
+    width:60px;
+    height:34px;
+}
+
+.switch input{
+    opacity:0;
+    width:0;
+    height:0;
+}
+
+.slider{
+    position:absolute;
+    inset:0;
+
+    background:#ccc;
+    border-radius:34px;
+
+    transition:.4s;
+    cursor:pointer;
+}
+
+.slider::before{
+    content:"";
+
+    position:absolute;
+
+    width:26px;
+    height:26px;
+
+    left:4px;
+    bottom:4px;
+
+    border-radius:50%;
+    background:white;
+
+    transition:.4s;
+}
+
+input:checked + .slider{
+    background:var(--pink3);
+}
+
+input:checked + .slider::before{
+    transform:translateX(26px);
+}
+
+/* SCHEDULE */
+
+.schedule{
+    margin-bottom:30px;
+}
+
+.schedule-grid{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(200px,1fr));
+
+    gap:15px;
+}
+
+.schedule-item{
+    border-radius:18px;
+    padding:20px;
+    text-align:center;
+    color:white;
+}
+
+.schedule-item.done{
+    background:
+    linear-gradient(
+    135deg,
+    #34d399,
+    #22c55e);
+}
+
+.schedule-item.upcoming{
+    background:
+    linear-gradient(
+    135deg,
+    var(--pink1),
+    var(--pink3));
+}
+
+.schedule-time{
+    font-size:1.5rem;
+    font-weight:bold;
+}
+
+/* HISTORY */
+
+.bottom-grid{
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(300px,1fr));
+
+    gap:20px;
+}
+
+.history-item,
+.notification-item{
+    background:
+    rgba(255,255,255,0.2);
+
+    padding:15px;
+    border-radius:16px;
+
+    margin-bottom:12px;
+}
+
+.item-time{
+    font-size:.85rem;
+    color:#666;
+    margin-bottom:5px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+    .logo{
+        font-size:2rem;
+    }
+
+    .status-value{
+        font-size:1.5rem;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1 class="logo">
+            <i class="fas fa-fish"></i>
+            Smart Fish Feeder
+        </h1>
+
+        <p class="subtitle">
+            Dashboard IoT Berbasis Wemos D1 Mini
+        </p>
+
+    </div>
+
+    <!-- STATUS -->
+
+    <div class="status-grid">
+
+        <div class="card online" id="deviceCard">
+
+            <div class="card-title">
+
+                <i class="fas fa-wifi"></i>
+
+                Status Perangkat
+
+                <div class="indicator online"
+                id="deviceIndicator"></div>
+
+            </div>
+
+            <div class="status-value"
+            id="deviceText">
+                Online
+            </div>
+
+            <div class="status-time">
+                Terhubung ke jaringan
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-title">
+                <i class="fas fa-clock"></i>
+                Jam Digital
+            </div>
+
+            <div class="status-value"
+            id="clock">
+                --:--
+            </div>
+
+            <div class="status-time"
+            id="date">
+                Memuat...
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-title">
+                <i class="fas fa-seedling"></i>
+                Pakan Hari Ini
+            </div>
+
+            <div class="status-value"
+            id="feedAmount">
+                0g
+            </div>
+
+            <div class="status-time">
+                Total pakan harian
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- BUTTON -->
+
+    <button class="feed-btn"
+    id="feedBtn">
+
+        <i class="fas fa-play"></i>
+        Beri Makan Sekarang
+
+    </button>
+
+    <!-- TOGGLE -->
+
+    <div class="card toggle-box">
+
+        <div class="card-title"
+        style="justify-content:center;">
+
+            <i class="fas fa-robot"></i>
+            Mode Otomatis
+
+        </div>
+
+        <div class="toggle-container">
+
+            <label class="switch">
+
+                <input type="checkbox"
+                id="autoToggle"
+                checked>
+
+                <span class="slider"></span>
+
+            </label>
+
+            <span id="toggleText">
+                Aktif
+            </span>
+
+        </div>
+
+    </div>
+
+    <!-- SCHEDULE -->
+
+    <div class="card schedule">
+
+        <div class="card-title">
+            <i class="fas fa-calendar-day"></i>
+            Jadwal Pemberian Pakan
+        </div>
+
+        <div class="schedule-grid"
+        id="scheduleGrid"></div>
+
+    </div>
+
+    <!-- HISTORY -->
+
+    <div class="bottom-grid">
+
+        <div class="card">
+
+            <div class="card-title">
+                <i class="fas fa-history"></i>
+                Riwayat Pemberian Pakan
+            </div>
+
+            <div id="historyBox"></div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-title">
+                <i class="fab fa-telegram"></i>
+                Notifikasi Telegram
+            </div>
+
+            <div id="notifBox"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+/* CLOCK */
+
+function updateClock(){
+
+    const now = new Date();
+
+    document.getElementById("clock")
+    .textContent =
+    now.toLocaleTimeString("id-ID");
+
+    document.getElementById("date")
+    .textContent =
+    now.toLocaleDateString("id-ID",{
+        weekday:"long",
+        day:"numeric",
+        month:"long",
+        year:"numeric"
+    });
+
+}
+
+/* SCHEDULE */
+
+const schedules = [
+
+    {
+        time:"07:00",
+        label:"Pagi",
+        status:"done"
+    },
+
+    {
+        time:"12:00",
+        label:"Siang",
+        status:"upcoming"
+    },
+
+    {
+        time:"18:00",
+        label:"Sore",
+        status:"upcoming"
+    }
+
+];
+
+function renderSchedule(){
+
+    const grid =
+    document.getElementById("scheduleGrid");
+
+    grid.innerHTML =
+    schedules.map(item => `
+
+        <div class="schedule-item ${item.status}">
+
+            <div class="schedule-time">
+                ${item.time}
+            </div>
+
+            <div>
+                ${item.label} Feed
+            </div>
+
+        </div>
+
+    `).join("");
+
+}
+
+/* HISTORY */
+
+const history = [
+
+    {
+        time:"07:00",
+        message:"🐟 Pakan berhasil diberikan"
+    },
+
+    {
+        time:"12:00",
+        message:"🐟 Pakan berhasil diberikan"
+    }
+
+];
+
+function renderHistory(){
+
+    const box =
+    document.getElementById("historyBox");
+
+    box.innerHTML =
+    history.map(item => `
+
+        <div class="history-item">
+
+            <div class="item-time">
+                ${item.time} WIB
+            </div>
+
+            <div>
+                ${item.message}
+            </div>
+
+        </div>
+
+    `).join("");
+
+}
+
+/* NOTIFICATION */
+
+const notifications = [
+
+    {
+        time:"Baru saja",
+        message:"✅ Sistem aktif"
+    },
+
+    {
+        time:"2 jam lalu",
+        message:"📦 Stok pakan 20%"
+    }
+
+];
+
+function renderNotif(){
+
+    const box =
+    document.getElementById("notifBox");
+
+    box.innerHTML =
+    notifications.map(item => `
+
+        <div class="notification-item">
+
+            <div class="item-time">
+                ${item.time}
+            </div>
+
+            <div>
+                ${item.message}
+            </div>
+
+        </div>
+
+    `).join("");
+
+}
+
+/* BUTTON */
+
+document.getElementById("feedBtn")
+.addEventListener("click",function(){
+
+    const btn = this;
+
+    btn.disabled = true;
+
+    btn.innerHTML =
+    '<i class="fas fa-spinner fa-spin"></i> Memberi makan...';
+
+    setTimeout(()=>{
+
+        btn.innerHTML =
+        '<i class="fas fa-check"></i> Berhasil';
+
+        history.unshift({
+
+            time:new Date()
+            .toLocaleTimeString("id-ID",{
+                hour:"2-digit",
+                minute:"2-digit"
+            }),
+
+            message:"🐟 Pakan manual berhasil diberikan"
+
+        });
+
+        renderHistory();
+
+        setTimeout(()=>{
+
+            btn.disabled = false;
+
+            btn.innerHTML =
+            '<i class="fas fa-play"></i> Beri Makan Sekarang';
+
+        },2000);
+
+    },2000);
+
+});
+
+/* TOGGLE */
+
+document.getElementById("autoToggle")
+.addEventListener("change",function(){
+
+    const text =
+    document.getElementById("toggleText");
+
+    if(this.checked){
+
+        text.textContent = "Aktif";
+        text.style.color = "#22c55e";
+
+    }else{
+
+        text.textContent = "Nonaktif";
+        text.style.color = "#ef4444";
+
+    }
+
+});
+
+/* DEVICE STATUS */
+
+function deviceStatus(){
+
+    const online =
+    Math.random() > 0.1;
+
+    const card =
+    document.getElementById("deviceCard");
+
+    const indicator =
+    document.getElementById("deviceIndicator");
+
+    const text =
+    document.getElementById("deviceText");
+
+    if(online){
+
+        card.classList.remove("offline");
+        card.classList.add("online");
+
+        indicator.classList.remove("offline");
+        indicator.classList.add("online");
+
+        text.textContent = "Online";
+
+    }else{
+
+        card.classList.remove("online");
+        card.classList.add("offline");
+
+        indicator.classList.remove("online");
+        indicator.classList.add("offline");
+
+        text.textContent = "Offline";
+
+    }
+
+}
+
+/* FEED */
+
+function updateFeed(){
+
+    const grams =
+    Math.floor(Math.random()*50)+10;
+
+    document.getElementById("feedAmount")
+    .textContent = grams + "g";
+
+}
+
+/* INIT */
+
+updateClock();
+renderSchedule();
+renderHistory();
+renderNotif();
+deviceStatus();
+updateFeed();
+
+setInterval(updateClock,1000);
+setInterval(deviceStatus,30000);
+setInterval(updateFeed,10000);
+
+</script>
+
+</body>
+</html>
